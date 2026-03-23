@@ -8,6 +8,7 @@ on:
 jobs:
   dbt-run:
     runs-on: ubuntu-latest
+    environment: Astrafy_dbt
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     env:
       DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt
