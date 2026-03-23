@@ -72,3 +72,8 @@ Para validar rapido:
 ## Nota sobre alcance de datos
 
 Para cumplir el requerimiento de coste, el modelo `staging` filtra 3 meses. El `mart` se calcula sobre ese `staging`.
+
+## Nota tecnica sobre schemas en dbt
+
+Este repo incluye `macros/generate_schema_name.sql` para evitar que dbt concatene `target.dataset + "_" + schema`.
+Asi, los modelos se materializan exactamente en los datasets `staging` y `mart` ya creados por Terraform, sin intentar crear datasets nuevos.
