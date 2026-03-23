@@ -21,47 +21,6 @@ Este repositorio implementa la parte de **dbt-core + GitHub Actions** del challe
 - `dbt-core` + `dbt-bigquery`
 - Proyecto GCP, datasets `staging` y `mart`, y service account creados por Terraform (repo `Task_2_terraform`)
 
-## Ejecucion local
-
-1. Crear entorno e instalar dbt:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install dbt-bigquery
-```
-
-2. Crear perfil local `~/.dbt/profiles.yml`:
-
-```yaml
-astrafy_bch:
-  target: dev
-  outputs:
-    dev:
-      type: bigquery
-      method: service-account
-      project: <GCP_PROJECT_ID>
-      dataset: staging
-      keyfile: <RUTA_AL_JSON_DEL_SERVICE_ACCOUNT>
-      location: US
-      threads: 4
-```
-
-3. Opcional: sobreescribir datasets por variables de entorno:
-
-```bash
-export DBT_STAGING_DATASET=staging
-export DBT_MART_DATASET=mart
-```
-
-4. Ejecutar:
-
-```bash
-dbt deps
-dbt run
-dbt test
-```
-
 ## CI en GitHub Actions
 
 El workflow `.github/workflows/dbt-ci.yml` se dispara en eventos de PR (`opened`, `synchronize`, `reopened`, `ready_for_review`) y ejecuta:
