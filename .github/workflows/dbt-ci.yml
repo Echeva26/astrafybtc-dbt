@@ -28,10 +28,10 @@ jobs:
 
       - name: Validate required secrets
         run: |
-          test -n "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" || (echo "Missing secret: GCP_SERVICE_ACCOUNT_KEY" && exit 1)
-          test -n "${{ secrets.GCP_PROJECT_ID }}" || (echo "Missing secret: GCP_PROJECT_ID" && exit 1)
-          test -n "${{ secrets.DBT_STAGING_DATASET }}" || (echo "Missing secret: DBT_STAGING_DATASET" && exit 1)
-          test -n "${{ secrets.DBT_MART_DATASET }}" || (echo "Missing secret: DBT_MART_DATASET" && exit 1)
+          [ -n "$GCP_SERVICE_ACCOUNT_KEY" ] || (echo "Missing secret: GCP_SERVICE_ACCOUNT_KEY" && exit 1)
+          [ -n "$GCP_PROJECT_ID" ] || (echo "Missing secret: GCP_PROJECT_ID" && exit 1)
+          [ -n "$DBT_STAGING_DATASET" ] || (echo "Missing secret: DBT_STAGING_DATASET" && exit 1)
+          [ -n "$DBT_MART_DATASET" ] || (echo "Missing secret: DBT_MART_DATASET" && exit 1)
 
       - name: Install dbt BigQuery adapter
         run: pip install dbt-bigquery
