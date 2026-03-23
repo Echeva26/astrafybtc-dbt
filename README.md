@@ -36,6 +36,39 @@ El workflow `.github/workflows/dbt-ci.yml` se dispara en eventos de PR (`opened`
 - `DBT_STAGING_DATASET`: dataset staging (ej. `staging`).
 - `DBT_MART_DATASET`: dataset mart (ej. `mart`).
 
+### Formato exacto de `GCP_SERVICE_ACCOUNT_KEY`
+
+Debes pegar el **JSON completo** de la clave del service account, por ejemplo:
+
+```json
+{
+  "type": "service_account",
+  "project_id": "...",
+  "private_key_id": "...",
+  "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+  "client_email": "...",
+  "client_id": "...",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "..."
+}
+```
+
+### Troubleshooting del error de auth vacio
+
+Si en logs ves variables vacias (`GCP_*` y `DBT_*`), GitHub no esta inyectando secrets al workflow. Las causas mas comunes:
+
+- El PR viene desde un **fork** (por seguridad, secrets no se exponen en `pull_request`).
+- El secret se creo en otro repo/organization distinto.
+- Se uso un Environment con reglas y el job no esta apuntando a ese environment.
+
+Para validar rapido:
+
+1. Haz un branch en el **mismo repo** (no fork) y abre PR.
+2. O ejecuta manualmente el workflow con `workflow_dispatch` desde la pestaña Actions.
+3. Revisa que los 4 secrets esten en `Settings > Secrets and variables > Actions`.
+
 ## Nota sobre alcance de datos
 
 Para cumplir el requerimiento de coste, el modelo `staging` filtra 3 meses. El `mart` se calcula sobre ese `staging`.
