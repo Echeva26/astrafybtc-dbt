@@ -38,4 +38,4 @@ El workflow `.github/workflows/dbt-ci.yml` se dispara en eventos de PR (`opened`
 
 ## Nota sobre alcance de datos
 
-Para cumplir el requerimiento de coste, el modelo `staging` filtra a 3 meses. El `mart` se calcula sobre ese `staging`.
+Para cumplir el requerimiento de coste, el modelo `staging` filtra a 3 meses el contenido. El `mart` se calcula sobre ese `staging`.
