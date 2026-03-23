@@ -1,0 +1,59 @@
+name: dbt-ci
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  dbt-run:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    env:
+      DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      DBT_STAGING_DATASET: ${{ secrets.DBT_STAGING_DATASET }}
+      DBT_MART_DATASET: ${{ secrets.DBT_MART_DATASET }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dbt BigQuery adapter
+        run: pip install dbt-bigquery
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Write dbt profile
+        run: |
+          mkdir -p .dbt
+          cat > .dbt/profiles.yml <<'EOF'
+          astrafy_bch:
+            target: ci
+            outputs:
+              ci:
+                type: bigquery
+                method: service-account-json
+                project: "{{ env_var('GCP_PROJECT_ID') }}"
+                dataset: "{{ env_var('DBT_STAGING_DATASET', 'staging') }}"
+                location: US
+                threads: 4
+                keyfile_json: "{{ env_var('GCP_SERVICE_ACCOUNT_KEY') | as_native }}"
+          EOF
+
+      - name: Run dbt deps
+        run: dbt deps
+
+      - name: Run dbt
+        run: dbt run
+
+      - name: Run dbt tests
+        run: dbt test

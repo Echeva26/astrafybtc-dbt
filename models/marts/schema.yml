@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: fct_address_balances_excluding_coinbase
+    description: "Balance neto por direccion, excluyendo direcciones vinculadas a transacciones coinbase."
+    columns:
+      - name: address
+        description: "Direccion BCH."
+        tests:
+          - not_null
+          - unique
+      - name: current_balance
+        description: "Suma neta de entradas y salidas dentro del alcance del modelo."
+        tests:
+          - not_null

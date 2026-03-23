@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_bch_transactions
+    description: "Transacciones de Bitcoin Cash de los ultimos 3 meses."
+    columns:
+      - name: hash
+        description: "Identificador unico de la transaccion."
+        tests:
+          - not_null

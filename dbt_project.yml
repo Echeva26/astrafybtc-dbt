@@ -1,0 +1,20 @@
+name: "astrafy_bch"
+version: "1.0.0"
+config-version: 2
+
+profile: "astrafy_bch"
+
+model-paths: ["models"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  astrafy_bch:
+    staging:
+      +materialized: table
+      +schema: "{{ env_var('DBT_STAGING_DATASET', 'staging') }}"
+    marts:
+      +materialized: table
+      +schema: "{{ env_var('DBT_MART_DATASET', 'mart') }}"
