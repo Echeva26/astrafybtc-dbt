@@ -4,7 +4,7 @@ models:
   - name: stg_bch_transactions
     description: "Transacciones de Bitcoin Cash de los ultimos 3 meses."
     columns:
-      - name: hash
-        description: "Identificador unico de la transaccion."
+      - name: block_timestamp
+        description: "Timestamp del bloque de la transaccion."
         tests:
           - not_null

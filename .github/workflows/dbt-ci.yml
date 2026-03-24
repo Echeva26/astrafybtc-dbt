@@ -3,11 +3,13 @@ name: dbt-ci
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 jobs:
   dbt-run:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
+    environment: Astrafy_dbt
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     env:
       DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -24,6 +26,13 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Validate required secrets
+        run: |
+          [ -n "$GCP_SERVICE_ACCOUNT_KEY" ] || (echo "Missing secret: GCP_SERVICE_ACCOUNT_KEY" && exit 1)
+          [ -n "$GCP_PROJECT_ID" ] || (echo "Missing secret: GCP_PROJECT_ID" && exit 1)
+          [ -n "$DBT_STAGING_DATASET" ] || (echo "Missing secret: DBT_STAGING_DATASET" && exit 1)
+          [ -n "$DBT_MART_DATASET" ] || (echo "Missing secret: DBT_MART_DATASET" && exit 1)
+
       - name: Install dbt BigQuery adapter
         run: pip install dbt-bigquery
 
@@ -31,6 +40,12 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Verify required env vars
+        run: |
+          test -n "$GCP_PROJECT_ID"
+          test -n "$DBT_STAGING_DATASET"
+          test -n "$DBT_MART_DATASET"
 
       - name: Write dbt profile
         run: |
